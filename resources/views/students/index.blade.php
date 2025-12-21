@@ -97,8 +97,7 @@
                                 <th class="ps-4">NIS</th>
                                 <th>Nama Lengkap</th>
                                 <th>Kelas</th>
-                                <th>Tahun Akademik</th>
-                                <th class="text-center">Status Risiko</th>
+                                <th>Semester</th> <th class="text-center">Status Risiko</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -111,7 +110,14 @@
                                     <small class="text-muted">Siswa Aktif</small>
                                 </td>
                                 <td><span class="badge bg-light text-dark border">{{ $s->class }}</span></td>
-                                <td>{{ $s->academic_year }}</td>
+                                <td>
+                                    @if($s->grades->isNotEmpty())
+                                        <span class="fw-bold text-dark">{{ $s->grades->last()->semester }}</span>
+                                        <small class="text-muted">({{ $s->grades->last()->semester % 2 == 0 ? 'Genap' : 'Ganjil' }})</small>
+                                    @else
+                                        <span class="text-muted small">No Data</span>
+                                    @endif
+                                </td>
                                 <td class="text-center">
                                     @if($s->risk_level == 'Aman')
                                         <span class="badge rounded-pill bg-success-subtle text-success border border-success px-3">
@@ -128,7 +134,9 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <button class="btn btn-outline-secondary btn-sm border-0"><i class="bi bi-eye"></i></button>
+                                    <a href="{{ route('students.show', $s->id) }}" class="btn btn-outline-secondary btn-sm border-0">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
                                     <button class="btn btn-outline-primary btn-sm border-0"><i class="bi bi-pencil-square"></i></button>
                                 </td>
                             </tr>

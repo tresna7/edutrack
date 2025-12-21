@@ -8,3 +8,4 @@ Route::get('/', function () {
 });
 
 Route::get('/students', [\App\Http\Controllers\StudentController::class, 'index']);
+Route::get('/students/{id}', [StudentController::class, 'show'])->name('students.show');
