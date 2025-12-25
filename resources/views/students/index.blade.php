@@ -62,7 +62,7 @@
                         <div class="fs-1 me-3"><i class="bi bi-shield-check"></i></div>
                         <div>
                             <h6 class="mb-0">Kondisi Aman</h6>
-                            <h2 class="mb-0 fw-bold">{{ $students->where('risk_level', 'Aman')->count() }}</h2>
+                            <h2 class="mb-0 fw-bold">{{ $students->filter(fn($s) => $s->automatic_risk_level == 'Aman')->count() }}</h2>
                         </div>
                     </div>
                 </div>
@@ -73,7 +73,7 @@
                         <div class="fs-1 me-3"><i class="bi bi-exclamation-triangle-fill"></i></div>
                         <div>
                             <h6 class="mb-0">Berisiko Tinggi</h6>
-                            <h2 class="mb-0 fw-bold">{{ $students->where('risk_level', 'Risiko')->count() }}</h2>
+                            <h2 class="mb-0 fw-bold">{{ $students->filter(fn($s) => $s->automatic_risk_level == 'Risiko Tinggi')->count() }}</h2>
                         </div>
                     </div>
                 </div>
@@ -85,8 +85,8 @@
                 <h5 class="mb-0 fw-bold text-dark">
                     <i class="bi bi-table me-2 text-primary"></i>Data Monitoring Siswa
                 </h5>
-                <a href="#" class="btn btn-primary btn-sm rounded-pill shadow-sm">
-                    <i class="bi bi-plus-circle me-1"></i> Tambah Siswa
+                <a href="{{ route('grades.create') }}" class="btn btn-primary btn-sm rounded-pill shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Tambah Nilai
                 </a>
             </div>
             <div class="card-body p-0">
@@ -97,7 +97,8 @@
                                 <th class="ps-4">NIS</th>
                                 <th>Nama Lengkap</th>
                                 <th>Kelas</th>
-                                <th>Semester</th> <th class="text-center">Status Risiko</th>
+                                <th>Semester</th>
+                                <th class="text-center">Status Risiko (Avg)</th>
                                 <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -119,17 +120,22 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    @if($s->risk_level == 'Aman')
+                                    @php
+                                        $status = $s->automatic_risk_level;
+                                        $average = $s->average_score;
+                                    @endphp
+
+                                    @if($status == 'Aman')
                                         <span class="badge rounded-pill bg-success-subtle text-success border border-success px-3">
-                                            <i class="bi bi-check-circle-fill me-1"></i> Aman
+                                            <i class="bi bi-check-circle-fill me-1"></i> Aman ({{ number_format($average, 1) }})
                                         </span>
-                                    @elseif($s->risk_level == 'Waspada')
+                                    @elseif($status == 'Waspada')
                                         <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis border border-warning px-3">
-                                            <i class="bi bi-info-circle-fill me-1"></i> Waspada
+                                            <i class="bi bi-info-circle-fill me-1"></i> Waspada ({{ number_format($average, 1) }})
                                         </span>
                                     @else
                                         <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger px-3">
-                                            <i class="bi bi-exclamation-octagon-fill me-1"></i> Risiko
+                                            <i class="bi bi-exclamation-octagon-fill me-1"></i> {{ $status }} ({{ number_format($average, 1) }})
                                         </span>
                                     @endif
                                 </td>
