@@ -15,6 +15,44 @@ class StudentController extends Controller
         return view('students.index', compact('students'));
     }
 
+    public function create()
+    {
+        return view('students.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nis' => 'required|unique:students',
+            'name' => 'required|string|max:255',
+            'class' => 'required|string',
+            'academic_year' => 'nullable|string'
+        ]);
+
+        Student::create($request->all());
+
+        return redirect()->route('students.index')->with('success', 'Siswa berhasil ditambahkan!');
+    }
+// StudentController.php
+public function edit($id)
+{
+    $student = Student::find($id);
+    return view('students.edit', compact('student'));
+}
+
+public function update(Request $request, $id)
+{
+    $student = Student::find($id);
+    $student->update($request->all());
+    return redirect()->route('students.index');
+}
+
+public function destroy($id)
+{
+    $student = Student::find($id);
+    $student->delete();
+    return redirect()->route('students.index');
+}
     public function show($id)
     {
         $student = Student::with('grades.subject')->findOrFail($id);
