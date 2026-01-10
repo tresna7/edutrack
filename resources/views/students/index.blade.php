@@ -4,6 +4,31 @@
 
 @section('content')
 <div class="fade-in-up">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('home') }}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+            @if(isset($selectedClass))
+                <li class="breadcrumb-item active">Kelas {{ $selectedClass }}</li>
+            @else
+                <li class="breadcrumb-item active">Semua Siswa</li>
+            @endif
+        </ol>
+    </nav>
+
+    <!-- Class Filter Info -->
+    @if(isset($selectedClass))
+    <div class="alert alert-info d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <i class="bi bi-funnel-fill me-2"></i>
+            Menampilkan siswa dari <strong>Kelas {{ $selectedClass }}</strong>
+        </div>
+        <a href="{{ route('students.index') }}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-x-circle me-1"></i> Lihat Semua Kelas
+        </a>
+    </div>
+    @endif
+
     <!-- Statistics Cards -->
     <div class="row mb-4">
         <div class="col-md-4 mb-3">
@@ -43,16 +68,73 @@
 
     <!-- Students Table -->
     <div class="card shadow-soft">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold text-dark">
-                <i class="bi bi-table me-2 text-gradient-primary"></i>Data Monitoring Siswa
-            </h5>
-            <div>
-                <a href="{{ route('students.create') }}" class="btn btn-primary btn-sm me-2">
-                    <i class="bi bi-person-plus-fill me-1"></i> Tambah Siswa
-                </a>
-                <a href="{{ route('grades.create') }}" class="btn btn-success btn-sm">
-                    <i class="bi bi-plus-circle me-1"></i> Tambah Nilai
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0 fw-bold text-dark">
+                    <i class="bi bi-table me-2"></i>Data Monitoring Siswa
+                </h5>
+                <div>
+                    <a href="{{ route('students.create') }}" class="btn btn-primary btn-sm me-2">
+                        <i class="bi bi-person-plus-fill me-1"></i> Tambah Siswa
+                    </a>
+                    <a href="{{ route('grades.create') }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i> Tambah Nilai
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Search and Filter Section -->
+            <form method="GET" action="{{ route('students.index') }}" class="row g-3">
+                <!-- Search Box -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" 
+                               name="search" 
+                               class="form-control" 
+                               placeholder="Cari nama atau NIS..." 
+                               value="{{ request('search') }}">
+                    </div>
+                </div>
+                
+                <!-- Level Filter -->
+                <div class="col-md-2">
+                    <select name="level" class="form-select">
+                        <option value="">Semua Tingkat</option>
+                        <option value="10" {{ request('level') == '10' ? 'selected' : '' }}>Kelas 10</option>
+                        <option value="11" {{ request('level') == '11' ? 'selected' : '' }}>Kelas 11</option>
+                        <option value="12" {{ request('level') == '12' ? 'selected' : '' }}>Kelas 12</option>
+                    </select>
+                </div>
+                
+                <!-- Major Filter -->
+                <div class="col-md-2">
+                    <select name="major" class="form-select">
+                        <option value="">Semua Jurusan</option>
+                        <option value="IPA" {{ request('major') == 'IPA' ? 'selected' : '' }}>IPA</option>
+                        <option value="IPS" {{ request('major') == 'IPS' ? 'selected' : '' }}>IPS</option>
+                    </select>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-funnel me-1"></i> Filter
+                    </button>
+                    <a href="{{ route('students.index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+            
+            <!-- Results Counter -->
+            <div class="mt-3 text-muted small">
+                <i class="bi bi-info-circle me-1"></i>
+                Menampilkan <strong>{{ $students->count() }}</strong> dari <strong>{{ $students->total() }}</strong> siswa
+            </div>
+        </div>
                 </a>
             </div>
         </div>

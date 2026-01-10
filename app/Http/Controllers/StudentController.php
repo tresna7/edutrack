@@ -9,10 +9,44 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    public function index()
+    public function index(Request $request, $class = null)
     {
-        $students = Student::all();
-        return view('students.index', compact('students'));
+        $query = Student::query();
+        
+        // Filter by class if provided
+        if ($class) {
+            $query->where('class', $class);
+            $selectedClass = $class;
+        } else {
+            $selectedClass = null;
+        }
+        
+        // Search by name or NIS
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('nis', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filter by level (10, 11, 12)
+        if ($request->filled('level')) {
+            $query->where('class', 'like', $request->level . '%');
+        }
+        
+        // Filter by major (IPA, IPS)
+        if ($request->filled('major')) {
+            $query->where('class', 'like', '%' . $request->major . '%');
+        }
+        
+        // Paginate results (15 per page)
+        $students = $query->orderBy('name', 'asc')->paginate(15)->withQueryString();
+        
+        // Get total count for display
+        $totalStudents = $query->count();
+        
+        return view('students.index', compact('students', 'selectedClass', 'totalStudents'));
     }
 
     public function create()
